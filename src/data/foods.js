@@ -1,0 +1,37 @@
+// 음식 스와이프 카드. tags 는 여행지의 foods 가중치와 매칭돼요.
+export const TAG_LABELS = {
+  soup: '국물',
+  noodle: '면',
+  seafood: '해산물',
+  raw: '회·스시',
+  meat: '고기',
+  grill: '숯불구이',
+  street: '길거리 음식',
+  spicy: '매운맛',
+  sour: '새콤한 맛',
+  sweet: '디저트',
+  fruit: '열대 과일',
+  dumpling: '만두',
+  rice: '밥심',
+  curry: '향신료',
+  bread: '빵',
+  cafe: '카페',
+  beer: '맥주 한 잔',
+  herb: '허브 향',
+  korean: '한식',
+};
+
+export const FOODS = [
+  { id: 'broth', emoji: '🍜', title: '진한 국물 한 그릇', sub: '라멘 · 쌀국수 · 우육면', tags: ['noodle', 'soup'], color: 'mango' },
+  { id: 'spicysour', emoji: '🌶️', title: '맵고 새콤한 맛', sub: '똠얌꿍 · 쏨땀 · 짬뽕', tags: ['spicy', 'sour', 'herb'], color: 'tomato' },
+  { id: 'sushi', emoji: '🍣', title: '갓 잡은 생선', sub: '스시 · 회 · 카이센동', tags: ['raw', 'seafood'], color: 'sky' },
+  { id: 'dumpling', emoji: '🥟', title: '육즙 터지는 만두', sub: '샤오롱바오 · 교자', tags: ['dumpling', 'meat'], color: 'mint' },
+  { id: 'street', emoji: '🍢', title: '야시장 주전부리', sub: '꼬치 · 튀김 · 길거리 간식', tags: ['street'], color: 'grape' },
+  { id: 'bbq', emoji: '🥩', title: '숯불에 구운 고기', sub: '흑돼지 · 야키니쿠 · 바비큐', tags: ['meat', 'grill'], color: 'tomato' },
+  { id: 'tropical', emoji: '🥭', title: '열대 과일 디저트', sub: '망고빙수 · 코코넛 · 망고 찹쌀밥', tags: ['fruit', 'sweet'], color: 'mango' },
+  { id: 'seafood', emoji: '🦀', title: '해산물 한 상', sub: '게 · 조개 · 생선구이', tags: ['seafood', 'grill'], color: 'sky' },
+  { id: 'curry', emoji: '🍛', title: '향신료 듬뿍', sub: '카레 · 락사 · 카오소이', tags: ['curry', 'spicy'], color: 'mango' },
+  { id: 'gukbap', emoji: '🍲', title: '뜨끈한 국밥 한 그릇', sub: '돼지국밥 · 해장국 · 백반', tags: ['korean', 'soup', 'rice'], color: 'mint' },
+  { id: 'cafe', emoji: '☕', title: '분위기 좋은 카페', sub: '오션뷰 · 한옥 카페 · 빵지순례', tags: ['cafe', 'sweet', 'bread'], color: 'bubble' },
+  { id: 'beer', emoji: '🍺', title: '현지 맥주 한 잔', sub: '생맥주 · 이자카야 · 포장마차', tags: ['beer', 'street'], color: 'grape' },
+];

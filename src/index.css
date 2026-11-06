@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 레이아웃: 점박이 버터색 종이 위에 스티커 카드를 쌓은 폰 폭 한 줄 */
+:root {
+  --paper: #fff3d6;
+  --dot: #f0dcaa;
+  --card: #fffdf6;
+  --rule: #eadcbc;
+  --glass: #fffbef;
+  --text: #221c3b;
+  --text-soft: #5e5679;
+  --line: #221c3b;
+  --shadow: #221c3b;
+  --on-pop: #221c3b;
+
+  --tomato: #ff5e4d;
+  --mango: #ffc531;
+  --mint: #3cd3a3;
+  --sky: #5bb8ff;
+  --grape: #9372ff;
+  --bubble: #ff8dc7;
+
+  --font-display: 'Bagel Fat One', 'Jua', 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
+  --font-local: 'IBM Plex Sans KR', 'Hiragino Sans', 'Noto Sans JP', 'Noto Sans Thai', 'Noto Sans TC', system-ui,
+    sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --paper: #19152e;
+    --dot: #29234a;
+    --card: #262043;
+    --rule: #3a3262;
+    --glass: #2f2852;
+    --text: #fff1d6;
+    --text-soft: #bdb3da;
+    --line: #0b0918;
+    --shadow: #0b0918;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --paper: #19152e;
+  --dot: #29234a;
+  --card: #262043;
+  --rule: #3a3262;
+  --glass: #2f2852;
+  --text: #fff1d6;
+  --text-soft: #bdb3da;
+  --line: #0b0918;
+  --shadow: #0b0918;
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--paper);
+  background-image: radial-gradient(var(--dot) 1.3px, transparent 1.4px);
+  background-size: 20px 20px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  /* 스와이프 카드가 날아갈 때 화면이 옆으로 밀리지 않게 */
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.font-local {
+  font-family: var(--font-local);
+}
+
+.gutter {
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* 스티커: 두꺼운 외곽선 + 오프셋 그림자 */
+.sticker {
+  border: 3px solid var(--line);
+  box-shadow: 4px 4px 0 var(--shadow);
+}
+
+.sticker-sm {
+  border: 2.5px solid var(--line);
+  box-shadow: 2.5px 2.5px 0 var(--shadow);
+}
+
+.press {
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.press:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 var(--shadow);
+}
+
+:focus-visible {
+  outline: 3px dashed var(--grape);
+  outline-offset: 3px;
+}
+
+/* 근속 연차 슬라이더 */
+.years-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 18px;
+  border-radius: 999px;
+  border: 3px solid var(--line);
+  background: linear-gradient(
+    90deg,
+    var(--tomato) 0%,
+    var(--tomato) var(--fill, 50%),
+    var(--card) var(--fill, 50%),
+    var(--card) 100%
+  );
+  box-shadow: 3px 3px 0 var(--shadow);
+  cursor: pointer;
+}
+
+.years-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--mango);
+  border: 3px solid var(--line);
+  box-shadow: 2px 2px 0 var(--shadow);
+}
+
+.years-range::-moz-range-thumb {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--mango);
+  border: 3px solid var(--line);
+  box-shadow: 2px 2px 0 var(--shadow);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press {
+    transition: none;
+  }
+}
