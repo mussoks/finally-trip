@@ -18,6 +18,14 @@ export function save(state) {
   }
 }
 
+export function clearSaved() {
+  try {
+    window.localStorage.removeItem(KEY);
+  } catch {
+    /* 지울 수 없어도 괜찮아요 */
+  }
+}
+
 export function buzz(ms = 12) {
   try {
     navigator.vibrate?.(ms);

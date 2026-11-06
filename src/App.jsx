@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { DESTINATIONS } from './data/destinations.js';
 import { mergeHolidays } from './lib/holidays.js';
 import { rankDestinations, tasteProfile } from './lib/match.js';
@@ -54,6 +55,10 @@ function restore() {
   const saved = load();
   if (!saved || !SCREENS.includes(saved.screen)) return DEFAULT;
   const merged = { ...DEFAULT, ...saved, prefs: { ...DEFAULT.prefs, ...saved.prefs } };
+  // 예전 버전이나 깨진 저장값이 화면을 망가뜨리지 않게 모양을 확인해요.
+  if (!Array.isArray(merged.decisions)) merged.decisions = [];
+  const isDate = (v) => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v);
+  if (merged.trip && !(isDate(merged.trip.start) && isDate(merged.trip.end) && Array.isArray(merged.trip.leave))) merged.trip = null;
   if (merged.screen === 'gacha') merged.screen = 'results';
   if (merged.screen === 'detail' && !merged.detailId) merged.screen = 'results';
   return merged;
@@ -181,7 +186,9 @@ export default function App() {
             exit={{ opacity: 0, y: -14, transition: { duration: 0.15 } }}
             transition={{ type: 'spring', stiffness: 280, damping: 26 }}
           >
-            {view}
+            <ErrorBoundary key={s.screen + (s.detailId ?? '')} onReset={() => set({ screen: s.screen === 'detail' ? 'results' : 'intro' })}>
+              {view}
+            </ErrorBoundary>
           </motion.main>
         </AnimatePresence>
       </div>

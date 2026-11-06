@@ -35,10 +35,12 @@ const range = (f) => {
 /** 한국관광공사 TourAPI 데이터 (빌드할 때 받아 둔 것) */
 export default function TourSection({ data, trip, fetchedAt }) {
   const today = todayKey();
-  const spots = (data.spots ?? []).slice(0, 8);
-  const foods = (data.foods ?? []).slice(0, 6);
+  // 받아 온 데이터 모양이 예상과 달라도 화면이 멈추지 않게, 배열·제목 있는 항목만 써요.
+  const list = (v) => (Array.isArray(v) ? v.filter((it) => it && typeof it.title === 'string' && it.title) : []);
+  const spots = list(data?.spots).slice(0, 8);
+  const foods = list(data?.foods).slice(0, 6);
 
-  const festivals = (data.festivals ?? [])
+  const festivals = list(data?.festivals)
     .map((f) => {
       const s = ymd(f.start);
       const e = ymd(f.end) ?? s;
