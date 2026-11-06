@@ -2,3 +2,5 @@ node_modules
 dist
 .DS_Store
 *.local
+# 빌드할 때 scripts/fetch-data.mjs 가 만드는 공공데이터 (저장소에는 올리지 않아요)
+public/data/

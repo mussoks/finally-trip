@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { ChevronRight, Footprints, Plane, RotateCcw, Shuffle, Sun, TrainFront } from 'lucide-react';
+import { CalendarDays, ChevronRight, Footprints, Plane, RotateCcw, Shuffle, Sun, TrainFront } from 'lucide-react';
+import { longDate, shortDate } from '../lib/holidays.js';
 import { GhostButton, MatchBadge, Pill, PopButton, Wordmark } from '../components/ui.jsx';
 import { TAG_LABELS } from '../data/foods.js';
 import { COMPANIONS, DAYS, DEST_STAMINA_LABEL, STAMINA, labelOf } from '../data/prefs.js';
@@ -62,7 +63,7 @@ function DestCard({ d, rank, onOpen }) {
   );
 }
 
-export default function Results({ years, prefs, ranked, onOpen, onGacha, onRedoFood, onRestart }) {
+export default function Results({ years, prefs, ranked, trip, onOpen, onGacha, onHolidays, onRedoFood, onRestart }) {
   const top = ranked.slice(0, 3);
   const rest = ranked.slice(3);
   const tier = tierOf(years);
@@ -89,6 +90,31 @@ export default function Results({ years, prefs, ranked, onOpen, onGacha, onRedoF
         <p className="text-soft">
           {labelOf(COMPANIONS, prefs.companion)} · {labelOf(DAYS, prefs.days)} · 하루 {labelOf(STAMINA, prefs.stamina)}
         </p>
+        <button
+          type="button"
+          onClick={onHolidays}
+          className="press sticker-sm flex items-center gap-3 rounded-2xl bg-card px-4 py-3 text-left text-ink"
+        >
+          <span className="sticker-sm grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-mango text-onpop">
+            <CalendarDays size={20} strokeWidth={2.6} />
+          </span>
+          <span className="min-w-0 flex-1">
+            {trip ? (
+              <>
+                <span className="block text-[12px] font-bold text-soft">고른 연휴 · {trip.leave.length ? `연차 ${trip.leave.length}일` : '연차 없이'}</span>
+                <span className="block font-bold">
+                  {longDate(trip.start)} ~ {shortDate(trip.end)} · {trip.length}일
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="block font-bold">언제 갈지 아직이라면?</span>
+                <span className="block text-[13px] text-soft">연차를 끼워 제일 길게 쉬는 날을 찾아 드려요</span>
+              </>
+            )}
+          </span>
+          <span className="shrink-0 text-[13px] font-bold underline decoration-2 underline-offset-4">{trip ? '바꾸기' : '연휴 찾기'}</span>
+        </button>
       </div>
 
       {top.length === 0 ? (

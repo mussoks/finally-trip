@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, CalendarDays } from 'lucide-react';
 import Mascot from '../components/Mascot.jsx';
-import { PopButton, Wordmark } from '../components/ui.jsx';
+import { GhostButton, PopButton, Wordmark } from '../components/ui.jsx';
 
 const STEPS = ['근속 연차', '여행 스타일', '음식 스와이프', '추천 여행지'];
 
-export default function Intro({ onStart, onSample }) {
+export default function Intro({ onStart, onSample, onHolidays }) {
   return (
     <div className="flex flex-col gap-7 pb-10">
       <div className="flex h-[72px] items-center justify-between">
@@ -68,6 +68,9 @@ export default function Intro({ onStart, onSample }) {
         <PopButton onClick={onStart}>
           시작하기 <ArrowRight size={20} strokeWidth={2.8} />
         </PopButton>
+        <GhostButton onClick={onHolidays}>
+          <CalendarDays size={18} strokeWidth={2.8} /> 언제 쉴 수 있는지부터 볼래요
+        </GhostButton>
         <button type="button" onClick={onSample} className="py-2 text-[15px] font-bold text-soft underline decoration-2 underline-offset-4">
           예시 결과 먼저 구경하기
         </button>

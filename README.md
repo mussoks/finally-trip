@@ -16,8 +16,21 @@
 | 여행지 상세 | 먹을 것 · 볼 것 · 현지인 픽 · 문화 한 스푼 · **체력 맞춤 일정** · 주문 카드 · 여행 팁 |
 | 주문 카드 | 현지어 문장을 크게 띄워 점원에게 보여줄 수 있어요 (일본어, 중국어(대만), 베트남어, 태국어, 영어, 제주어) |
 | 캡슐 뽑기 | 그래도 못 고르면 가챠 머신으로 운명에 맡겨요. 궁합이 높을수록 잘 나와요 |
+| 징검다리 연휴 계산기 | 쓸 수 있는 연차(0~7일)를 고르면 주말·공휴일 사이에 끼워 **제일 길게 쉬는 날**을 찾아줘요. 고른 연휴는 일정 날짜·요일에 반영돼요 |
+| 한국관광공사 데이터 | 국내 여행지 상세에 실제 명소·음식점·축제를 보여줘요. 여행 날짜와 겹치는 축제엔 "여행 중!" 표시 (API 키가 있을 때) |
 
 선택한 내용은 브라우저 `localStorage`에 저장돼서 새로고침해도 이어서 볼 수 있어요.
+
+## 징검다리 연휴 계산기
+
+`src/lib/holidays.js` · `src/data/holidays.js`
+
+- 공휴일은 **우주항공청 「2027년 월력요항」** 기준으로 내장돼 있어요 (2026년 12월 ~ 2027년 12월, 대체공휴일 7일 포함).
+  - 2026년부터 제헌절·노동절이 관공서 공휴일이 됐고 대체공휴일도 적용돼요.
+  - 2027년 설날은 2월 7일(일)이라 2월 6~9일이 연휴예요 (중국 춘절은 2월 6일이라 하루 달라요).
+- 빌드할 때 특일 정보 API를 받으면 그 해는 API 데이터로 바꿔 쓰고, 다음 해까지 자동으로 늘어나요.
+- 찾는 방법: 전날이 출근일인 날마다 연차를 N일까지 써서 최대한 늘린 구간을 만들고, 길이 → 연차 적게 쓴 순 → 날짜 순으로 고른 뒤 겹치는 구간은 하나만 남겨요.
+- 관공서 공휴일 기준이에요. 5인 미만 사업장이나 교대 근무는 다를 수 있어요.
 
 ## 추천은 이렇게 계산해요
 
@@ -46,6 +59,46 @@ npm run preview  # 빌드 결과 미리보기
 
 `vite.config.js`의 `base: './'` 덕분에 `dist/`를 GitHub Pages 같은 하위 경로에 그대로 올려도 돼요.
 
+## 배포 (GitHub Pages)
+
+`.github/workflows/deploy.yml` 이 `main`에 푸시할 때마다, 그리고 매주 월요일 아침에 빌드해서 배포해요.
+
+처음 한 번만 저장소 **Settings → Pages → Build and deployment → Source** 를 **GitHub Actions** 로 바꿔 주세요.
+주소는 `https://mussoks.github.io/finally-trip/` 이에요.
+
+## 실제 데이터 연결 (공공데이터포털)
+
+API 키가 없어도 앱은 내장 데이터로 잘 동작해요. 키를 넣으면 빌드할 때 `scripts/fetch-data.mjs` 가 실제 데이터를 받아 `public/data/*.json` 으로 저장하고, 앱이 그걸 읽어요.
+키는 빌드 서버에서만 쓰이고 **브라우저로는 나가지 않아요.**
+
+1. [공공데이터포털](https://www.data.go.kr)에 로그인해요.
+2. 아래 두 API를 검색해서 각각 **활용신청** 해요 (개발계정은 보통 자동 승인돼요).
+   - `한국관광공사_국문 관광정보 서비스_GW` (KorService2)
+   - `한국천문연구원_특일 정보`
+3. 마이페이지에서 **일반 인증키**를 복사해요. Encoding/Decoding 어느 쪽이든 괜찮아요.
+4. GitHub 저장소 **Settings → Secrets and variables → Actions → New repository secret**
+   - Name: `DATA_GO_KR_KEY`
+   - Secret: 복사한 키
+5. **Actions → Deploy to GitHub Pages → Run workflow** 로 다시 배포해요. 로그의 `[fetch-data]` 줄에서 받은 개수를 볼 수 있어요.
+
+승인 직후에는 키가 반영되기까지 시간이 걸려서 `SERVICE_KEY_IS_NOT_REGISTERED_ERROR` 가 날 수 있어요. 조금 뒤에 다시 돌리면 돼요.
+
+로컬에서 받아 보려면:
+
+```bash
+DATA_GO_KR_KEY=발급받은키 npm run fetch-data
+npm run dev
+```
+
+데이터 이용 시 출처 표시가 필요해서 화면에 "자료 제공: 한국관광공사 TourAPI"를 넣어 두었어요.
+
+### 받아 오는 방식 (KorService2 주의점)
+
+- KorService2 는 지역 필터가 법정동 코드(`lDongRegnCd`, `lDongSignguCd`)로 바뀌었고, 행정구역 통합으로 코드가 바뀐 사례가 있어요. 그래서 코드를 박아 두지 않고 `ldongCode2` 로 **이름을 찾아서** 코드를 얻어요. 실패하면 `locationBasedList2` (좌표 반경 20km)로 대신해요.
+- `searchFestival2` 는 지역 코드로 거르면 0건이 오는 사례가 있어서 전국을 받은 뒤 **주소로 걸러요.**
+- 결과가 1건이면 `items.item` 이 배열이 아니라 객체로, 없으면 `items` 가 빈 문자열로 와서 둘 다 처리해요.
+- 모든 결과는 주소에 그 도시 이름이 있는지 한 번 더 확인해요.
+
 ## 기술 스택
 
 - React 18 + Vite 7
@@ -62,16 +115,24 @@ src/
   data/
     destinations.js     여행지 15곳 (국내 5, 해외 10)
     foods.js            음식 스와이프 카드 12장과 태그 이름
+    holidays.js         내장 공휴일 (2027년 월력요항)
     prefs.js            동행·기간·체력·지역 선택지
   lib/
     match.js            입맛 궁합 계산, 캡슐 뽑기 가중치
     itinerary.js        체력 맞춤 일정 생성
+    holidays.js         날짜 계산, 징검다리 연휴 찾기
+    remote.js           빌드 때 받은 공공데이터 읽기
     storage.js          localStorage, 진동(햅틱)
     pop.js              팝 컬러 클래스 매핑
   components/
     Mascot.jsx          넥타이 풀린 캐리어 캐릭터
+    TourSection.jsx     한국관광공사 명소·음식점·축제
     ui.jsx              스티커 버튼, 칩, 뱃지 등
-  screens/              Intro, Years, Prefs, Swipe, Results, Detail, Gacha
+  screens/              Intro, Years, Prefs, Swipe, Results, Detail, Gacha, Holidays
+scripts/
+  fetch-data.mjs        공공데이터포털에서 데이터 받기 (빌드 전에 실행)
+.github/workflows/
+  deploy.yml            GitHub Pages 배포
 ```
 
 ## 주의: 데이터는 샘플이에요
@@ -82,9 +143,11 @@ src/
 
 ## 다음에 할 일
 
-- [ ] **징검다리 연휴 계산기**: 연차 며칠로 최대 며칠 쉴 수 있는지 (공휴일 데이터는 공공데이터포털 특일 정보 API로)
+- [x] **징검다리 연휴 계산기**
+- [x] 국내 여행지에 한국관광공사 **TourAPI** 데이터 붙이기 (빌드 때 수집)
+- [x] GitHub Pages 자동 배포
 - [ ] **현지인 맛집 지수**: 리뷰 언어 비율로 현지인 맛집 판별 (Google Places API 등 공식 API나 제휴로. 무단 크롤링은 안 돼요)
-- [ ] 국내 여행지는 한국관광공사 **TourAPI**로 데이터 확장
+- [ ] TourAPI 상세 정보(`detailCommon2`)로 운영시간·소개글 보강
 - [ ] LLM으로 일정 문장을 자연스럽게 다듬기
 - [ ] **맛 도감**: 다녀와서 먹은 음식을 도감처럼 수집
 - [ ] 여권 스탬프, 여행 후 자동 엽서

@@ -17,6 +17,8 @@ import {
 import { MatchBadge, Pill, PopButton, SectionTitle, TopBar } from '../components/ui.jsx';
 import { TAG_LABELS } from '../data/foods.js';
 import { DEST_STAMINA_LABEL } from '../data/prefs.js';
+import TourSection from '../components/TourSection.jsx';
+import { addDays, shortDate } from '../lib/holidays.js';
 import { buildItinerary, itineraryNote } from '../lib/itinerary.js';
 import { travelShort } from '../lib/match.js';
 import { KIND_BG, POP_BG } from '../lib/pop.js';
@@ -82,10 +84,11 @@ function OrderCard({ phrase, lang, onClose }) {
   );
 }
 
-export default function Detail({ dest, prefs, onBack, onGacha }) {
+export default function Detail({ dest, prefs, trip, tour, onBack, onGacha, onHolidays }) {
   const [phrase, setPhrase] = useState(null);
   const plan = useMemo(() => buildItinerary(dest, prefs), [dest, prefs]);
   const TravelIcon = travelIcon(dest);
+  const tourData = dest.domestic ? tour?.destinations?.[dest.id] : null;
 
   return (
     <div className="flex flex-col gap-8 pb-12">
@@ -148,6 +151,8 @@ export default function Detail({ dest, prefs, onBack, onGacha }) {
         </div>
       </section>
 
+      {tourData && <TourSection data={tourData} trip={trip} fetchedAt={tour.fetchedAt} />}
+
       <section className="flex flex-col gap-3">
         <SectionTitle icon={Sparkles} color="grape">
           문화 한 스푼
@@ -159,13 +164,22 @@ export default function Detail({ dest, prefs, onBack, onGacha }) {
         <SectionTitle icon={CalendarDays} color="mango">
           {prefs.days - 1}박 {prefs.days}일 일정
         </SectionTitle>
-        <p className="text-[14px] font-bold text-soft">{itineraryNote(prefs)}</p>
+        <p className="text-[14px] font-bold text-soft">
+          {itineraryNote(prefs)}
+          {trip && trip.length > prefs.days && ` 연휴 ${trip.length}일 중 앞 ${prefs.days}일 일정이에요.`}
+        </p>
+        {!trip && (
+          <button type="button" onClick={onHolidays} className="self-start text-[14px] font-bold text-ink underline decoration-2 underline-offset-4">
+            날짜를 정하면 요일까지 맞춰 드려요 → 연휴 찾기
+          </button>
+        )}
         <ol className="flex flex-col gap-4">
           {plan.map((day, i) => (
             <li key={i} className="sticker rounded-[24px] bg-card p-4 text-ink">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full bg-ink px-2.5 py-0.5 font-display text-[14px] text-paper tabular-nums">DAY {i + 1}</span>
                 <span className="font-bold">{day.label}</span>
+                {trip && <span className="ml-auto text-[14px] font-bold text-soft tabular-nums">{shortDate(addDays(trip.start, i))}</span>}
               </div>
               <ol className="mt-3 flex flex-col gap-2.5">
                 {day.slots.map((s, j) => (

@@ -1,6 +1,7 @@
 import { ArrowRight } from 'lucide-react';
 import { OptionChip, PopButton, TopBar } from '../components/ui.jsx';
 import { COMPANIONS, DAYS, SCOPES, STAMINA } from '../data/prefs.js';
+import { shortDate } from '../lib/holidays.js';
 
 function Group({ title, hint, children }) {
   return (
@@ -14,7 +15,7 @@ function Group({ title, hint, children }) {
   );
 }
 
-export default function Prefs({ prefs, onChange, onNext, onBack }) {
+export default function Prefs({ prefs, trip, onChange, onNext, onBack }) {
   const set = (k, v) => onChange({ ...prefs, [k]: v });
   const ready = Boolean(prefs.companion);
 
@@ -41,6 +42,12 @@ export default function Prefs({ prefs, onChange, onNext, onBack }) {
       </Group>
 
       <Group title="며칠 쉴 수 있어요?">
+        {trip && (
+          <p className="sticker-sm rounded-xl bg-card px-3 py-2 text-[14px] font-bold text-ink">
+            고른 연휴: {shortDate(trip.start)} ~ {shortDate(trip.end)} ({trip.length}일)
+            {trip.length > 5 && <span className="block text-[12px] font-medium text-soft">일정은 최대 4박 5일까지 짜 드려요.</span>}
+          </p>
+        )}
         <div className="grid grid-cols-3 gap-2.5">
           {DAYS.map((d) => (
             <OptionChip key={d.id} selected={prefs.days === d.id} color={d.color} onClick={() => set('days', d.id)}>
